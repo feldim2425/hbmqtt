@@ -6,7 +6,7 @@ import asyncio
 import logging
 import ssl
 import copy
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse, unquote
 from functools import wraps
 
 from hbmqtt.utils import not_in_dict_or_none
@@ -369,8 +369,8 @@ class MQTTClient:
         uri_attributes = urlparse(self.session.broker_uri)
         scheme = uri_attributes.scheme
         secure = True if scheme in ('mqtts', 'wss') else False
-        self.session.username = self.session.username if self.session.username else uri_attributes.username
-        self.session.password = self.session.password if self.session.password else uri_attributes.password
+        self.session.username = unquote(self.session.username) if self.session.username else uri_attributes.username
+        self.session.password = unquote(self.session.password) if self.session.password else uri_attributes.password
         self.session.remote_address = uri_attributes.hostname
         self.session.remote_port = uri_attributes.port
         if scheme in ('mqtt', 'mqtts') and not self.session.remote_port:
